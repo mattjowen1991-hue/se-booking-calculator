@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SE Booking Calculator — Hubstaff</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-50: #E6F1FB;
+      --blue-200: #85B7EB;
+      --blue-400: #378ADD;
+      --blue-600: #185FA5;
+      --blue-800: #0C447C;
+      --blue-900: #042C53;
+      --green-50: #E1F5EE;
+      --green-600: #0F6E56;
+      --green-800: #085041;
+      --amber-50: #FAEEDA;
+      --amber-600: #854F0B;
+      --amber-800: #633806;
+      --red-50: #FCEBEB;
+      --red-600: #A32D2D;
+      --red-800: #791F1F;
+      --gray-50: #F1EFE8;
+      --gray-100: #D3D1C7;
+      --gray-400: #888780;
+      --gray-600: #5F5E5A;
+      --gray-800: #444441;
+      --gray-900: #2C2C2A;
+      --white: #FFFFFF;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--gray-900);
+      background: #F5F6F8;
+    }
+
+    /* ── Page shell ── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar-logo {
+      width: 28px;
+      height: 28px;
+      background: var(--blue-600);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topbar-logo svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .topbar-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-900);
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-tag {
+      font-size: 11px;
+      color: var(--gray-400);
+      background: var(--gray-50);
+      border: 1px solid var(--gray-100);
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2.5rem 1rem 4rem;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-100);
+      padding: 2rem;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    /* ── Progress ── */
+    .progress-bar {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 2rem;
+    }
+
+    .progress-step {
+      flex: 1;
+      height: 3px;
+      background: var(--gray-100);
+      border-radius: 2px;
+      transition: background 0.25s;
+    }
+
+    .progress-step.done { background: var(--blue-600); }
+    .progress-step.active { background: var(--blue-400); }
+
+    /* ── Steps ── */
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .step-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--blue-600);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .step-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    .step-sub {
+      font-size: 14px;
+      color: var(--gray-600);
+      margin-bottom: 1.75rem;
+      line-height: 1.55;
+    }
+
+    /* ── Options ── */
+    .options { display: flex; flex-direction: column; gap: 8px; }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 15px;
+      border: 1.5px solid var(--gray-100);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: var(--white);
+      user-select: none;
+    }
+
+    .option:hover { border-color: var(--blue-200); background: var(--blue-50); }
+    .option.selected { border-color: var(--blue-600); background: var(--blue-50); }
+
+    .option-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gray-100);
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      background: var(--white);
+    }
+
+    .option.selected .option-radio {
+      border-color: var(--blue-600);
+      background: var(--blue-600);
+    }
+
+    .option.selected .option-radio::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: white;
+      display: block;
+    }
+
+    .option-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-900);
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+
+    .option-desc {
+      font-size: 12px;
+      color: var(--gray-600);
+      line-height: 1.45;
+    }
+
+    /* ── Inputs ── */
+    .input-group {
+      margin-bottom: 1rem;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-800);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-prefix {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--gray-600);
+    }
+
+    .input-row input,
+    .input-row select,
+    select.full {
+      font-size: 15px;
+      padding: 9px 12px;
+      border: 1.5px solid var(--gray-100);
+      border-radius: var(--radius-md);
+      background: var(--white);
+      color: var(--gray-900);
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .input-row input { width: 180px; }
+    select.full { width: 100%; cursor: pointer; }
+
+    .input-row input:focus,
+    select.full:focus {
+      outline: none;
+      border-color: var(--blue-600);
+      box-shadow: 0 0 0 3px rgba(24,95,165,0.1);
+    }
+
+    /* ── Info box ── */
+    .info-box {
+      background: var(--gray-50);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--gray-100);
+      padding: 11px 14px;
+      margin-top: 1rem;
+    }
+
+    .info-box p {
+      font-size: 12.5px;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    .info-box strong { color: var(--gray-900); }
+
+    .info-box.draft {
+      background: var(--amber-50);
+      border-color: #EFD9A0;
+    }
+
+    .info-box.draft p { color: var(--amber-800); }
+
+    /* ── Summary grid ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 0.5rem;
+    }
+
+    .summary-item {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius-md);
+      padding: 10px 13px;
+    }
+
+    .s-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 3px;
+    }
+
+    .s-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-900);
+      line-height: 1.3;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--gray-50);
+    }
+
+    .nav-count {
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    .btn {
+      padding: 9px 22px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      border: 1.5px solid var(--gray-100);
+      background: var(--white);
+      color: var(--gray-800);
+    }
+
+    .btn:hover { background: var(--gray-50); border-color: var(--gray-100); }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .btn-primary {
+      background: var(--blue-600);
+      color: white;
+      border-color: var(--blue-600);
+    }
+
+    .btn-primary:hover { background: var(--blue-800); border-color: var(--blue-800); }
+
+    /* ── Result ── */
+    .result-card {
+      border-radius: var(--radius-lg);
+      border: 1.5px solid;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .result-yes { border-color: var(--green-600); background: var(--green-50); }
+    .result-no { border-color: var(--red-600); background: var(--red-50); }
+    .result-conditional { border-color: var(--amber-600); background: var(--amber-50); }
+
+    .result-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .result-yes .result-badge { background: var(--green-600); color: white; }
+    .result-no .result-badge { background: var(--red-600); color: white; }
+    .result-conditional .result-badge { background: var(--amber-600); color: white; }
+
+    .result-heading {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    .result-yes .result-heading { color: var(--green-800); }
+    .result-no .result-heading { color: var(--red-800); }
+    .result-conditional .result-heading { color: var(--amber-800); }
+
+    .result-body {
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+
+    .result-yes .result-body { color: var(--green-600); }
+    .result-no .result-body { color: var(--red-600); }
+    .result-conditional .result-body { color: var(--amber-600); }
+
+    .booking-box {
+      border: 1.5px solid var(--gray-100);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      background: var(--white);
+      margin-bottom: 1rem;
+    }
+
+    .booking-box h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+    }
+
+    .booking-box p {
+      font-size: 13px;
+      color: var(--gray-600);
+      margin-bottom: 1rem;
+      line-height: 1.55;
+    }
+
+    .booking-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 20px;
+      background: var(--blue-600);
+      color: white;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      font-family: inherit;
+      transition: background 0.15s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .booking-link:hover { background: var(--blue-800); }
+
+    .booking-link svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .restart-btn {
+      background: none;
+      border: none;
+      font-size: 13px;
+      color: var(--gray-400);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      margin-top: 0.75rem;
+      display: block;
+      font-family: inherit;
+      transition: color 0.15s;
+    }
+
+    .restart-btn:hover { color: var(--gray-800); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 12px;
+      color: var(--gray-400);
+      border-top: 1px solid var(--gray-100);
+      background: var(--white);
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 1.25rem; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .topbar { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">
+        <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      </div>
+      <span class="topbar-name">Hubstaff</span>
+    </div>
+    <span class="topbar-tag">SE Booking Calculator</span>
+  </header>
+
+  <main class="main">
+    <div class="card">
+      <div class="progress-bar" id="progressBar"></div>
+      <div id="steps">
+
+        <!-- Step 0: Team -->
+        <div class="step" id="step-0">
+          <div class="step-eyebrow" id="eyebrow-0">Step 1</div>
+          <div class="step-title">Which team are you booking from?</div>
+          <div class="step-sub">This determines the qualification criteria and flow for your request.</div>
+          <div class="options">
+            <div class="option" onclick="selectOpt(0,'sales',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">Sales</div>
+                <div class="option-desc">Account Executive — booking SE for a prospect or new business deal</div>
+              </div>
+            </div>
+            <div class="option" onclick="selectOpt(0,'success',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">Customer Success</div>
+                <div class="option-desc">CSM — booking SE for an existing customer</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 1: Scenario -->
+        <div class="step" id="step-1">
+          <div class="step-eyebrow" id="eyebrow-1">Step 2</div>
+          <div class="step-title">What best describes the scenario?</div>
+          <div class="step-sub">Select the option that most closely matches the reason for booking.</div>
+          <div class="options">
+            <div class="option" onclick="selectOpt(1,'silent_app',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">Silent App demo, deployment, or troubleshooting</div>
+                <div class="option-desc">MSI install, MDM/GPO config, RDS setup, or post-deployment issues</div>
+              </div>
+            </div>
+            <div class="option" onclick="selectOpt(1,'technical_blocker',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">Technical blocker preventing trial or demo progress</div>
+                <div class="option-desc">App not tracking, SSL timeouts, blocked domains, or similar blockers</div>
+              </div>
+            </div>
+            <div class="option" onclick="selectOpt(1,'api',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">API integration or proof-of-concept support</div>
+                <div class="option-desc">Unexpected error codes, rate limiting, or integration compatibility questions</div>
+              </div>
+            </div>
+            <div class="option" onclick="selectOpt(1,'mdm_rds',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">MDM or RDS environment troubleshooting</div>
+                <div class="option-desc">Intune, Jamf, GPO deployments, or shared/virtualised desktop session issues</div>
+              </div>
+            </div>
+            <div class="option" onclick="selectOpt(1,'deal_size',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">High-value deal requiring technical credibility</div>
+                <div class="option-desc">Large-scale rollout or enterprise deal where technical confidence is a buying factor</div>
+              </div>
+            </div>
+            <div class="option" onclick="selectOpt(1,'roadmap',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">Product roadmap or feature scoping discussion</div>
+                <div class="option-desc">Confirming whether a customer use case is currently supported</div>
+              </div>
+            </div>
+            <div class="option" onclick="selectOpt(1,'other',this)">
+              <div class="option-radio"></div>
+              <div>
+                <div class="option-label">None of the above</div>
+                <div class="option-desc">Routine discovery, commercial discussion, or general account check-in</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Deal value -->
+        <div class="step" id="step-2">
+          <div class="step-eyebrow" id="eyebrow-2">Step 3</div>
+          <div class="step-title" id="step2-title">What is the estimated deal value?</div>
+          <div class="step-sub" id="step2-sub">For existing customers enter current MRR. For pre-sales enter the estimated deal value. Enter 0 if unknown.</div>
+          <div class="input-group">
+            <div class="input-row">
+              <span class="input-prefix">$</span>
+              <input type="number" id="dealInput" placeholder="e.g. 1200" min="0" oninput="updateDeal(this.value)" />
+              <span style="font-size:13px;color:var(--gray-400);">MRR / deal value</span>
+            </div>
+          </div>
+          <div class="info-box">
+            <p>The SE involvement threshold is <strong>$1,000</strong> for both Sales and Customer Success. This figure is subject to review.</p>
+          </div>
+        </div>
+
+        <!-- Step 3: Deal stage (Sales only) -->
+        <div class="step" id="step-3">
+          <div class="step-eyebrow" id="eyebrow-3">Step 4</div>
+          <div class="step-title">What is the current deal stage?</div>
+          <div class="step-sub">This helps track where in the sales cycle SE involvement is being requested.</div>
+          <div class="input-group">
+            <select class="full" id="stageSelect" onchange="updateStage(this.value)">
+              <option value="">Select a deal stage...</option>
+              <option value="pre_sale">Pre-sale</option>
+              <option value="demo">Demo</option>
+              <option value="negotiations">Negotiations</option>
+              <option value="post_sale">Post-sale</option>
+              <option value="csm_intro">CSM introduction</option>
+              <option value="contract_renewal">Contract renewal</option>
+            </select>
+          </div>
+          <div class="info-box draft">
+            <p>These stages are a working draft pending agreement with Sales and Success leadership.</p>
+          </div>
+        </div>
+
+        <!-- Step 4: Confirm -->
+        <div class="step" id="step-4">
+          <div class="step-eyebrow">Review your answers</div>
+          <div class="step-title">Confirm before seeing your result</div>
+          <div class="step-sub">Check your answers below. Use Back to change anything.</div>
+          <div class="summary-grid" id="summaryGrid"></div>
+        </div>
+
+        <!-- Result -->
+        <div class="step" id="step-result">
+          <div id="resultCard"></div>
+          <div id="bookingBox"></div>
+          <button class="restart-btn" onclick="restart()">Start over</button>
+        </div>
+
+      </div>
+
+      <div class="nav" id="nav">
+        <button class="btn" id="backBtn" onclick="back()" style="visibility:hidden;">Back</button>
+        <span class="nav-count" id="navCount"></span>
+        <button class="btn btn-primary" id="nextBtn" onclick="next()" disabled>Continue</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Hubstaff Support Engineering &nbsp;·&nbsp; Rules of Engagement v1 &nbsp;·&nbsp; For internal use only
+  </footer>
+
+</div>
+<script>
+  const AUTO_QUALIFY = ['silent_app','technical_blocker','api','mdm_rds'];
+  const CONDITIONAL  = ['deal_size','roadmap'];
+  const DISQUALIFY   = ['other'];
+
+  const stageLabels = {
+    pre_sale:'Pre-sale', demo:'Demo', negotiations:'Negotiations',
+    post_sale:'Post-sale', csm_intro:'CSM introduction', contract_renewal:'Contract renewal'
+  };
+  const scenarioLabels = {
+    silent_app:'Silent App deployment / troubleshooting', technical_blocker:'Technical blocker',
+    api:'API / proof-of-concept', mdm_rds:'MDM / RDS environment',
+    deal_size:'High-value deal', roadmap:'Product / feature scoping', other:'None of the above'
+  };
+
+  let answers = { team:null, scenario:null, dealValue:null, stage:null };
+  let current = 0;
+
+  const isSales      = () => answers.team === 'sales';
+  const needsDeal    = () => CONDITIONAL.includes(answers.scenario) || isSales();
+  const needsStage   = () => isSales();
+
+  function getSteps() {
+    let s = [0,1];
+    if (answers.scenario && needsDeal()) s.push(2);
+    if (needsStage()) s.push(3);
+    s.push(4);
+    return s;
+  }
+
+  function buildProgress() {
+    const bar   = document.getElementById('progressBar');
+    const steps = getSteps();
+    bar.innerHTML = '';
+    steps.forEach((_, i) => {
+      const idx = steps.indexOf(current);
+      const d = document.createElement('div');
+      d.className = 'progress-step' + (i < idx ? ' done' : i === idx ? ' active' : '');
+      bar.appendChild(d);
+    });
+  }
+
+  function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    if (n === 99) {
+      document.getElementById('step-result').classList.add('active');
+      document.getElementById('nav').style.display = 'none';
+      buildProgress(); return;
+    }
+    document.getElementById('step-' + n).classList.add('active');
+    document.getElementById('nav').style.display = 'flex';
+    const steps = getSteps();
+    const idx   = steps.indexOf(n);
+    document.getElementById('backBtn').style.visibility = idx > 0 ? 'visible' : 'hidden';
+    document.getElementById('navCount').textContent = (idx+1) + ' of ' + steps.length;
+    const nb = document.getElementById('nextBtn');
+    nb.textContent = n === 4 ? 'See result' : 'Continue';
+    nb.disabled = (n===0 && !answers.team) || (n===1 && !answers.scenario) ||
+                  (n===2 && answers.dealValue===null) || (n===3 && !answers.stage);
+    if (n === 4) buildSummary();
+    buildProgress();
+  }
+
+  function selectOpt(step, value, el) {
+    document.querySelectorAll('#step-'+step+' .option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    if (step===0) { answers.team=value; answers.stage=null; }
+    if (step===1) { answers.scenario=value; answers.dealValue=null; answers.stage=null; }
+    document.getElementById('nextBtn').disabled = false;
+  }
+
+  function updateDeal(val) {
+    answers.dealValue = val==='' ? null : parseFloat(val);
+    document.getElementById('nextBtn').disabled = answers.dealValue===null || val==='';
+  }
+
+  function updateStage(val) {
+    answers.stage = val||null;
+    document.getElementById('nextBtn').disabled = !val;
+  }
+
+  function buildSummary() {
+    const dv    = answers.dealValue !== null ? '$'+Number(answers.dealValue).toLocaleString() : '—';
+    const tOk   = answers.dealValue !== null && answers.dealValue >= 1000;
+    const tCol  = answers.dealValue !== null ? (tOk ? '#0F6E56' : '#A32D2D') : 'inherit';
+    const tText = answers.dealValue !== null ? (tOk ? 'Meets threshold' : 'Below threshold') : '—';
+    let html = `
+      <div class="summary-item"><div class="s-label">Team</div><div class="s-value">${answers.team==='sales'?'Sales':'Customer Success'}</div></div>
+      <div class="summary-item"><div class="s-label">Scenario</div><div class="s-value">${scenarioLabels[answers.scenario]||'—'}</div></div>`;
+    if (needsDeal()) html += `
+      <div class="summary-item"><div class="s-label">${isSales()?'Est. deal value':'MRR'}</div><div class="s-value">${dv}</div></div>
+      <div class="summary-item"><div class="s-label">Threshold</div><div class="s-value" style="color:${tCol}">${tText}</div></div>`;
+    if (isSales() && answers.stage) html += `
+      <div class="summary-item"><div class="s-label">Deal stage</div><div class="s-value">${stageLabels[answers.stage]||'—'}</div></div>`;
+    document.getElementById('summaryGrid').innerHTML = html;
+  }
+
+  function qualify() {
+    const s  = answers.scenario;
+    const dv = answers.dealValue || 0;
+    if (DISQUALIFY.includes(s))  return 'no';
+    if (AUTO_QUALIFY.includes(s)) return 'yes';
+    if (CONDITIONAL.includes(s))  return dv >= 1000 ? 'yes' : 'conditional';
+    return 'no';
+  }
+
+  function showResult() {
+    const result  = qualify();
+    const dvLabel = isSales() ? 'estimated deal value' : 'MRR';
+    const rc = document.getElementById('resultCard');
+    const bb = document.getElementById('bookingBox');
+
+    const bookingBtn = `<a class="booking-link" href="https://calendly.com/matt-owen-hubstaff/se-technical-call" target="_blank">
+      Schedule a call
+      <svg viewBox="0 0 14 14"><path d="M3 7h8M7 3l4 4-4 4"/></svg>
+    </a>`;
+
+    if (result === 'yes') {
+      rc.innerHTML = `<div class="result-card result-yes">
+        <div class="result-badge">Approved</div>
+        <div class="result-heading">SE involvement is approved</div>
+        <div class="result-body">Your scenario qualifies for Support Engineer involvement. Use the booking link below to schedule the call and submit your pre-meeting information. The SE will confirm attendance once all required details have been received.</div>
+      </div>`;
+      bb.innerHTML = `<div class="booking-box">
+        <h3>Book SE time</h3>
+        <p>The booking form will ask for all pre-meeting information required by the Rules of Engagement — customer name, HubSpot ticket link, technical summary, desired outcome, and agenda. Please have these ready before clicking through.</p>
+        ${bookingBtn}
+        <div class="info-box" style="margin-top:1rem;">
+          <p><strong>Coverage hours:</strong> 9:00 AM – 6:00 PM GMT, Mon–Fri. Minimum 24 hours notice required.</p>
+        </div>
+      </div>`;
+    } else if (result === 'conditional') {
+      rc.innerHTML = `<div class="result-card result-conditional">
+        <div class="result-badge">Approval needed</div>
+        <div class="result-heading">Manager approval required</div>
+        <div class="result-body">Your scenario may qualify, but the ${dvLabel} entered ($${Number(answers.dealValue).toLocaleString()}) is below the $1,000 threshold for automatic approval. Please get sign-off from your manager before booking. Once approved, use the link below.</div>
+      </div>`;
+      bb.innerHTML = `<div class="booking-box">
+        <h3>Once approved — book SE time</h3>
+        <p>Use the link below to schedule and submit your pre-meeting information after your manager has approved the exception.</p>
+        ${bookingBtn}
+      </div>`;
+    } else {
+      rc.innerHTML = `<div class="result-card result-no">
+        <div class="result-badge">Not approved</div>
+        <div class="result-heading">SE involvement is not required</div>
+        <div class="result-body">Your scenario does not meet the qualification criteria for SE involvement at this stage. If a technical issue surfaces, raise a HubSpot ticket or post in the Slack escalation thread for async SE review.</div>
+      </div>`;
+      bb.innerHTML = `<div class="booking-box">
+        <h3>Alternative options</h3>
+        <p>Raise a HubSpot ticket or post in the Slack escalation thread. The SE will review asynchronously and respond within the applicable SLA window.</p>
+        <div class="info-box"><p><strong>Not sure?</strong> Check the Quick Decision Guide in the Rules of Engagement, or speak to your manager before booking.</p></div>
+      </div>`;
+    }
+  }
+
+  function next() {
+    const steps = getSteps();
+    const idx   = steps.indexOf(current);
+    if (current===1 && DISQUALIFY.includes(answers.scenario)) { showResult(); showStep(99); return; }
+    if (current===1 && AUTO_QUALIFY.includes(answers.scenario) && !isSales()) { current=4; showStep(4); return; }
+    if (idx+1 < steps.length) { current=steps[idx+1]; showStep(current); }
+    else { showResult(); showStep(99); }
+  }
+
+  function back() {
+    const steps = getSteps();
+    const idx   = steps.indexOf(current);
+    if (idx > 0) { current=steps[idx-1]; showStep(current); }
+  }
+
+  function restart() {
+    current = 0;
+    answers = { team:null, scenario:null, dealValue:null, stage:null };
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    const di = document.getElementById('dealInput'); if (di) di.value='';
+    const ss = document.getElementById('stageSelect'); if (ss) ss.value='';
+    document.getElementById('nav').style.display = 'flex';
+    showStep(0);
+  }
+
+  showStep(0);
+  buildProgress();
+</script>
+</body>
+</html>
