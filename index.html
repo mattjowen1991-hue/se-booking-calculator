@@ -18,10 +18,8 @@ html,body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe U
 .card{background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--gray-100);padding:2rem;width:100%;max-width:600px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04)}
 .progress-bar{display:flex;gap:5px;margin-bottom:2rem}
 .ps{flex:1;height:3px;background:var(--gray-100);border-radius:2px;transition:background .25s}
-.ps.done{background:var(--blue)}
-.ps.active{background:var(--blue-mid)}
-.step{display:none}
-.step.active{display:block}
+.ps.done{background:var(--blue)}.ps.active{background:var(--blue-mid)}
+.step{display:none}.step.active{display:block}
 .eyebrow{font-size:11px;font-weight:600;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
 .step-title{font-size:20px;font-weight:600;color:var(--gray-900);margin-bottom:6px;letter-spacing:-.02em;line-height:1.3}
 .step-sub{font-size:14px;color:var(--gray-600);margin-bottom:1.75rem;line-height:1.55}
@@ -52,8 +50,7 @@ select.full{width:100%;cursor:pointer}
 .nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.75rem;padding-top:1.25rem;border-top:1px solid var(--gray-50)}
 .nav-count{font-size:12px;color:var(--gray-400)}
 .btn{padding:9px 22px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;border:1.5px solid var(--gray-100);background:var(--white);color:var(--gray-600)}
-.btn:hover{background:var(--gray-50)}
-.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn:hover{background:var(--gray-50)}.btn:disabled{opacity:.35;cursor:not-allowed}
 .btn-primary{background:var(--blue);color:white;border-color:var(--blue)}
 .btn-primary:hover{background:var(--blue-dark);border-color:var(--blue-dark)}
 .result-card{border-radius:var(--radius-lg);border:1.5px solid;padding:1.25rem 1.5rem;margin-bottom:1rem}
@@ -65,13 +62,9 @@ select.full{width:100%;cursor:pointer}
 .result-no .badge{background:var(--red-border);color:white}
 .result-cond .badge{background:var(--amber-border);color:white}
 .rh{font-size:18px;font-weight:600;margin-bottom:8px;letter-spacing:-.02em;line-height:1.3}
-.result-yes .rh{color:var(--green-text)}
-.result-no .rh{color:var(--red-text)}
-.result-cond .rh{color:var(--amber-text)}
+.result-yes .rh{color:var(--green-text)}.result-no .rh{color:var(--red-text)}.result-cond .rh{color:var(--amber-text)}
 .rb{font-size:13.5px;line-height:1.6}
-.result-yes .rb{color:var(--green-body)}
-.result-no .rb{color:var(--red-border)}
-.result-cond .rb{color:var(--amber-border)}
+.result-yes .rb{color:var(--green-body)}.result-no .rb{color:var(--red-border)}.result-cond .rb{color:var(--amber-border)}
 .booking-box{border:1.5px solid var(--gray-100);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;background:var(--white);margin-bottom:1rem}
 .booking-box h3{font-size:15px;font-weight:600;color:var(--gray-900);margin-bottom:6px}
 .booking-box p{font-size:13px;color:var(--gray-600);margin-bottom:1rem;line-height:1.55}
@@ -105,7 +98,7 @@ footer{text-align:center;padding:1.5rem;font-size:12px;color:var(--gray-400);bor
 </div>
 <div class="step" id="step-1">
 <div class="eyebrow">Step 2</div>
-<div class="step-title">What best describes the scenario?</div>
+<div class="step-title">What best describes the nature of this request?</div>
 <div class="step-sub">Select the option that most closely matches the reason for booking.</div>
 <div class="options">
 <div class="option" onclick="sel(1,'silent_app',this)"><div class="radio"></div><div><div class="opt-label">Silent App demo, deployment, or troubleshooting</div><div class="opt-desc">MSI install, MDM/GPO config, RDS setup, or post-deployment issues</div></div></div>
@@ -173,7 +166,7 @@ function updateDeal(v){a.dv=v===''?null:parseFloat(v);document.getElementById('n
 function updateStage(v){a.stage=v||null;document.getElementById('nextBtn').disabled=!v;}
 function buildSum(){const dv=a.dv!==null?'$'+Number(a.dv).toLocaleString():'—',tOk=a.dv!==null&&a.dv>=1000,tCol=a.dv!==null?(tOk?'#0F6E56':'#A32D2D'):'inherit',tText=a.dv!==null?(tOk?'Meets threshold':'Below threshold'):'—';let h=`<div class="si"><div class="sl">Team</div><div class="sv">${a.team==='sales'?'Sales':'Customer Success'}</div></div><div class="si"><div class="sl">Scenario</div><div class="sv">${SCL[a.scenario]||'—'}</div></div>`;if(needsDeal())h+=`<div class="si"><div class="sl">${isSales()?'Est. deal value':'MRR'}</div><div class="sv">${dv}</div></div><div class="si"><div class="sl">Threshold</div><div class="sv" style="color:${tCol}">${tText}</div></div>`;if(isSales()&&a.stage)h+=`<div class="si"><div class="sl">Deal stage</div><div class="sv">${SL[a.stage]||'—'}</div></div>`;document.getElementById('sg').innerHTML=h;}
 function qualify(){const s=a.scenario,dv=a.dv||0;if(DQ.includes(s))return'no';if(AQ.includes(s))return'yes';if(COND.includes(s))return dv>=1000?'yes':'conditional';return'no';}
-function showResult(){const r=qualify(),dvLabel=isSales()?'estimated deal value':'MRR',btn=`<a class="book-btn" href="${BOOKING}" target="_blank">Schedule a call &#8594;</a>`;let rc='',bb='';if(r==='yes'){rc=`<div class="result-card result-yes"><div class="badge">Approved</div><div class="rh">SE involvement is approved</div><div class="rb">Your scenario qualifies for Support Engineer involvement. Use the booking link below to schedule your call. All pre-meeting fields are required — the SE will not attend without them.</div></div>`;bb=`<div class="booking-box"><h3>Book SE time</h3><p>The booking form will ask for: customer name, company, HubSpot ticket / Slack link, technical summary, desired outcome, scenario type, MRR / deal value, and your team. Have these ready before clicking through.</p>${btn}<div class="info-box" style="margin-top:1rem"><p><strong>Coverage hours:</strong> Mon–Fri, 9:00 AM – 6:00 PM GMT. Available slots: 10:00–11:00 AM and 2:00–3:00 PM. Minimum 24 hours notice required.</p></div></div>`;}else if(r==='conditional'){rc=`<div class="result-card result-cond"><div class="badge">Approval needed</div><div class="rh">Manager approval required</div><div class="rb">Your scenario may qualify, but the ${dvLabel} entered ($${Number(a.dv).toLocaleString()}) is below the $1,000 threshold. Get sign-off from your manager before booking.</div></div>`;bb=`<div class="booking-box"><h3>Once approved — book SE time</h3><p>Use the link below after your manager has approved the exception.</p>${btn}</div>`;}else{rc=`<div class="result-card result-no"><div class="badge">Not approved</div><div class="rh">SE involvement is not required</div><div class="rb">Your scenario does not meet the qualification criteria at this stage. If a technical issue surfaces, raise a HubSpot ticket or post in the Slack escalation thread for async SE review.</div></div>`;bb=`<div class="booking-box"><h3>Alternative options</h3><p>Raise a HubSpot ticket or post in the Slack escalation thread. The SE will review asynchronously within the applicable SLA window.</p><div class="info-box"><p><strong>Not sure?</strong> Check the Quick Decision Guide in the Rules of Engagement, or speak to your manager.</p></div></div>`;}document.getElementById('rc').innerHTML=rc;document.getElementById('bb').innerHTML=bb;}
+function showResult(){const r=qualify(),dvLabel=isSales()?'estimated deal value':'MRR',btn=`<a class="book-btn" href="${BOOKING}" target="_blank">Schedule a call &#8594;</a>`;let rc='',bb='';if(r==='yes'){rc=`<div class="result-card result-yes"><div class="badge">Approved</div><div class="rh">SE involvement is approved</div><div class="rb">Your scenario qualifies for Support Engineer involvement. Use the booking link below to schedule your call. All pre-meeting fields are required — the SE will not attend without them.</div></div>`;bb=`<div class="booking-box"><h3>Book SE time</h3><p>Use the booking link below to schedule your call and complete the pre-meeting form.</p>${btn}<div class="info-box" style="margin-top:1rem"><p><strong>Coverage hours:</strong> Mon–Fri, 9:00 AM – 6:00 PM GMT. Available slots: 10:00–11:00 AM and 2:00–3:00 PM. Minimum 24 hours notice required.</p></div></div>`;}else if(r==='conditional'){rc=`<div class="result-card result-cond"><div class="badge">Approval needed</div><div class="rh">Manager approval required</div><div class="rb">Your scenario may qualify, but the ${dvLabel} entered ($${Number(a.dv).toLocaleString()}) is below the $1,000 threshold. Get sign-off from your manager before booking.</div></div>`;bb=`<div class="booking-box"><h3>Once approved — book SE time</h3><p>Use the link below after your manager has approved the exception.</p>${btn}</div>`;}else{rc=`<div class="result-card result-no"><div class="badge">Not approved</div><div class="rh">SE involvement is not required</div><div class="rb">Your scenario does not meet the qualification criteria at this stage. If a technical issue surfaces, raise a HubSpot ticket or post in the Slack escalation thread for async SE review.</div></div>`;bb=`<div class="booking-box"><h3>Alternative options</h3><p>Raise a HubSpot ticket or post in the Slack escalation thread. The SE will review asynchronously within the applicable SLA window.</p><div class="info-box"><p><strong>Not sure?</strong> Check the Quick Decision Guide in the Rules of Engagement, or speak to your manager.</p></div></div>`;}document.getElementById('rc').innerHTML=rc;document.getElementById('bb').innerHTML=bb;}
 function nxt(){const steps=getSteps(),idx=steps.indexOf(cur);if(cur===1&&DQ.includes(a.scenario)){showResult();showStep(99);return;}if(cur===1&&AQ.includes(a.scenario)&&!isSales()){cur=4;showStep(4);return;}if(idx+1<steps.length){cur=steps[idx+1];showStep(cur);}else{showResult();showStep(99);}}
 function back(){const steps=getSteps(),idx=steps.indexOf(cur);if(idx>0){cur=steps[idx-1];showStep(cur);}}
 function restart(){cur=0;a={team:null,scenario:null,dv:null,stage:null};document.querySelectorAll('.option').forEach(o=>o.classList.remove('selected'));const di=document.getElementById('dealInput');if(di)di.value='';const ss=document.getElementById('stageSelect');if(ss)ss.value='';document.getElementById('nav').style.display='flex';showStep(0);}
